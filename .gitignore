@@ -1,0 +1,73 @@
+# -------------------------
+# Python cache & build files
+# -------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# -------------------------
+# Virtual environments
+# -------------------------
+.env
+.venv/
+venv/
+ENV/
+env/
+*.env
+
+# -------------------------
+# Environment files (.env)
+# -------------------------
+.env
+*.env.local
+*.env.backup
+*.secret
+
+# -------------------------
+# Jupyter / Databricks notebooks
+# -------------------------
+.ipynb_checkpoints/
+# Databricks exported notebooks
+*.dbc
+*.html
+
+# -------------------------
+# Dataset folders
+# -------------------------
+data/
+datasets/
+raw_data/
+input_data/
+output_data/
+tmp/
+temp/
+logs/
+
+# -------------------------
+# IDE / Editor settings
+# -------------------------
+.vscode/
+.idea/
+*.code-workspace
+
+# -------------------------
+# OS generated files
+# -------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------
+# Databricks / MLflow
+# -------------------------
+mlruns/
+databricks_logs/
+
+
