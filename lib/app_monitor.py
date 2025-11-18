@@ -51,6 +51,7 @@ class GetDataFrameMemory:
         except Exception as e:
             self.logger.error(f"❌ Error while fetching DataFrame memory usage: {e}")
             return {}
+        
     def convert_bytes_to_mb(self, value):
         try:
             if isinstance(value, (int, float)):
