@@ -71,6 +71,8 @@ if __name__ == "__main__":
     ]
     generated_df = gen_df.generate_dataframe(data_list)
     sp_df_logger.log_df(spark_df=generated_df,spark_df_name="generated_df")
+    # log the no of rows and columns in the dataframe
+    sp_df_logger.log_df_basic(spark_df=generated_df,spark_df_name="generated_df")
     """Create DataFrame ENDS""" 
 
     """Transformation STARTS"""
@@ -83,18 +85,24 @@ if __name__ == "__main__":
     generated_df = df_t.create_unique_identifier(spark_df=generated_df) 
     # log the output dataframe
     sp_df_logger.log_df(spark_df=generated_df,spark_df_name="generated_df")
+    # log the no of rows and columns in the dataframe
+    sp_df_logger.log_df_basic(spark_df=generated_df,spark_df_name="generated_df")
     sp_df_logger.log_df_metrics(spark_df=generated_df,spark_df_name="generated_df")
 
     # process date and make all the inconsitent two digit and three digit year into 4 digit year
     processed_date_df = df_t.process_date_col_year(spark_df=generated_df,col_name="year",combine_date=True)
     # log the output dataframe
     sp_df_logger.log_df(spark_df=processed_date_df,spark_df_name="processed_date_df")
+    # log the no of rows and columns in the dataframe
+    sp_df_logger.log_df_basic(spark_df=processed_date_df,spark_df_name="processed_date_df")
     sp_df_logger.log_df_metrics(spark_df=processed_date_df,spark_df_name="processed_date_df")
 
     # process duplicate data in the dataFrame
     processed_duplicate_df = df_t.drop_duplicate_rows(spark_df=processed_date_df,col_name_list=["name","dob"])
     # log the output dataframe
     sp_df_logger.log_df(spark_df=processed_duplicate_df,spark_df_name="processed_duplicate_df")
+    # log the no of rows and columns in the dataframe
+    sp_df_logger.log_df_basic(spark_df=processed_duplicate_df,spark_df_name="processed_duplicate_df")
     sp_df_logger.log_df_metrics(spark_df=processed_duplicate_df,spark_df_name="processed_duplicate_df")
     """Transformation ENDS"""
     ######################################
@@ -117,6 +125,8 @@ if __name__ == "__main__":
     spark_df =ingest_data.import_data_csv(file_dir=file_dir)
     # log the output dataframe
     sp_df_logger.log_df(spark_df=spark_df,spark_df_name="spark_df")
+    # log the no of rows and columns in the dataframe
+    sp_df_logger.log_df_basic(spark_df=spark_df,spark_df_name="spark_df")
     """Ingest data ENDS"""
 
 
@@ -124,23 +134,30 @@ if __name__ == "__main__":
     # performing simple aggregation
     aggregated_df = df_t.simple_aggregation_operation(spark_df=spark_df)
     sp_df_logger.log_df(spark_df=aggregated_df,spark_df_name="aggregated_df")
+    # log the no of rows and columns in the dataframe
+    sp_df_logger.log_df_basic(spark_df=aggregated_df,spark_df_name="aggregated_df")
 
     # performing complex aggregation
     complex_aggregated_df = df_t.complex_aggregation_operation(spark_df=spark_df)
     sp_df_logger.log_df(spark_df=complex_aggregated_df,spark_df_name="complex_aggregated_df")
+    # log the no of rows and columns in the dataframe
+    sp_df_logger.log_df_basic(spark_df=complex_aggregated_df,spark_df_name="complex_aggregated_df")
 
     # performaing groupby "Country" and "WeekNumber" then perform aggregation operation on the dataFrame
     result_df = df_t.group_by_country_agg(spark_df=spark_df)
     logger.info('group the data based on "Country" and "WeekNumber" then perform aggregation operation on the dataFrame')
     sp_df_logger.log_df(spark_df=result_df,spark_df_name="result_df")
+    # log the no of rows and columns in the dataframe
+    sp_df_logger.log_df_basic(spark_df=result_df,spark_df_name="result_df")
     # export this df in a paraquet file
     output_path = os.path.join(project_dir,"export")
     df_exp.export_df_parquet(spark_df=result_df,output_path=output_path)
 
     # Window aggregation implementation
-    result_df = df_t.window_aggregation(spark_df=spark_df)
+    window_agg_result_df = df_t.window_aggregation(spark_df=spark_df)
     logger.info("Performaing window aggregation on the dataFrame")
-    sp_df_logger.log_df(spark_df=result_df,spark_df_name="result_df")
+    sp_df_logger.log_df(spark_df=window_agg_result_df,spark_df_name="window_agg_result_df")
+    sp_df_logger.log_df_basic(spark_df=window_agg_result_df,spark_df_name="window_agg_result_df")
     """Perform aggregation operation on the dataFrame ENDS"""
     ######################################
     # INGEST DATA INTO THE DATAFRAME AND PERFORM AGGREGATION OPERATIONS ON IT ENDS

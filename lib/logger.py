@@ -28,6 +28,10 @@ class LogSparkDataframe:
     # This will log the dataframe
     def log_df(self,spark_df,spark_df_name):
         self.logger.info(f">>>>> {spark_df_name} dataframe:\n{spark_df.limit(25).toPandas().to_string(index=False)}")
+    def log_df_basic(self, spark_df, spark_df_name):
+        rows = spark_df.count()
+        cols = len(spark_df.columns)
+        self.logger.debug(f"{spark_df_name}: rows={rows}, cols={cols}")
     # This will log the database schema
     def log_df_metrics(self,spark_df,spark_df_name):
         schema_str = spark_df._jdf.schema().treeString()
