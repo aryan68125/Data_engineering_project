@@ -63,7 +63,7 @@ class TestDataFrameTransformations(unittest.TestCase):
         ]
         df = self.spark.createDataFrame(data, ["year", "month", "day"])
 
-        transformer = Transformations(self.spark)
+        transformer = DataFrameTransformations(self.spark)
         result = transformer.process_date_col_year(df, col_name="year", combine_date=True)
         rows = result.collect()
 
@@ -140,12 +140,12 @@ class TestDataFrameTransformations(unittest.TestCase):
                 Row(Country="India", InvoiceNo="X1", InvoiceDate=datetime(2010, 1, 5), Quantity=10, UnitPrice=1),
                 Row(Country="India", InvoiceNo="X2", InvoiceDate=datetime(2010, 1, 10), Quantity=20, UnitPrice=1),
             ]
-            gen = GenerateDataFrame(self.spark)
-            df = gen.generate_dataframe(rows)
+            df = self.spark.createDataFrame(rows)
+
 
             result = self.transformer.group_by_country_agg(df)
 
-            self.assertEqual(result.count(), 2)
+            self.assertEqual(result.count(), 1)
             self.assertIn("NumInvoice", result.columns)
             self.assertIn("TotalQuantity", result.columns)
             self.assertIn("InvoiceValue", result.columns)
