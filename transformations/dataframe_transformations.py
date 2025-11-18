@@ -113,9 +113,9 @@ class DataFrameTransformations:
                     F.expr("Quantity * UnitPrice")
                 ),2
             ).alias("InvoiceValue")
-            saprk_df = (
+            spark_df = (
                 spark_df
-                .where("year(InvoiceDate) == 2010")
+                .where("year(InvoiceDate) = 2010")
                 .withColumn("WeekNumber",F.weekofyear(
                     F.col("InvoiceDate")
                 ))
@@ -126,7 +126,7 @@ class DataFrameTransformations:
                     NumInvoice, TotalQuantity, InvoiceValue
                 )
             )
-            return saprk_df
+            return spark_df
         except Exception as e:
             self.logger.error(str(e))
             raise
@@ -161,6 +161,6 @@ class DataFrameTransformations:
             raise
 
     def log_df_metrics(self,spark_df,operation_name):
-        self.logger.info(f"{operation_name} :: The memory taken by the spark dataFrame is = {self.metrics.get_mem_usage(spark_df).get("mem")} MB")
+        self.logger.info(f"{operation_name} :: The memory taken by the spark dataFrame is = {self.metrics.get_mem_usage(spark_df).get('mem')} MB")
         schema_str = spark_df._jdf.schema().treeString()
         self.logger.debug(f"Spark DataFrame Schema (expanded): {schema_str}")

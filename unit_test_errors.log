@@ -1,0 +1,2 @@
+2025-11-18 13:25:32,681 - ERROR - Error in test_group_by_country_agg: 1 != 2
+2025-11-18 13:25:33,162 - ERROR - Error in test_process_date_col_year: year

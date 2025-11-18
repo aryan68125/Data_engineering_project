@@ -1,5 +1,5 @@
 # This is a mini project that I have done 
-## Conda env
+## Project's env setup
 If you want to run this project in your local machine and you want to have the same set of libraries that I have for this project then I have exported my current conda env using this command 
 ```bash 
     conda env export > environment.yml
@@ -281,7 +281,7 @@ conda env create -f environment.yml
 ```
 #### NOTICE : 
 Remember this is only for local env in databricks conda envs are not supported.
-In order to tell databricks to use certain packages or dependencies you need to use requirements.txt file
+In order to tell databricks to use certain packages or dependencies you need to use requirements.txt file and that too you don't have to mention the pyspark version because that already comes with the databricks workspace.
 ```bash
 pyspark==4.0.1
 pandas>=2.0
@@ -289,4 +289,14 @@ pyarrow>=12.0
 chispa==0.11.1
 pytest==8.4.2
 python-decouple>=3.8
+```
+## Project's automated testing setup
+In order to run the automated testing use this command ```python3 -m unit_testing.unit_test```
+
+**NOTE:** One pro tip you should avoid trying to use log4j object to generate logs becuase it won't work the log4j object is attached to the sparkSession not the python session hence it won't be available for logging use python's inbuilt logging library instead.
+
+## Run the project
+You can run this project using this command 
+```bash
+python3 main_app.py
 ```
