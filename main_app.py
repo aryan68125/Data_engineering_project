@@ -1,4 +1,4 @@
-from pyspark.sql import SparkSession
+from core.spark_session import get_spark
 # import related to logging
 from lib.logger import Log4j, LogSparkDataframe
 # import related to custom spark configurations
@@ -22,12 +22,15 @@ from lib.clean_up_file_system import CleanupAppFileSystemOnReRun
 from unit_testing.generate_dataframe import GenerateDataFrame
 
 if __name__ == "__main__":
+    # check if the application is running on databricks or not 
+    is_databricks = "DATABRICKS_RUNTIME_VERSION" in os.environ
+
     # logging related logic
     # Get the current project's directory
     project_dir = os.path.dirname(os.path.abspath(__file__))
     # cleanup loggic on main_app.py re-run
     # initialize the cleanup class
-    cleanup = CleanupAppFileSystemOnReRun(project_dir)
+    cleanup = CleanupAppFileSystemOnReRun(project_dir,is_databricks)
     cleanup.execute_cleanup(clean_logs=True)
 
     # Get the Log4j.properties file directory
@@ -38,18 +41,7 @@ if __name__ == "__main__":
     os.makedirs(log_dir, exist_ok=True)
 
     conf = get_spark_app_config()
-    spark = (
-        SparkSession
-        .builder
-        .config(conf=conf)
-        .config("spark.driver.extraJavaOptions",
-                f"-Dlog4j.configuration=file:{log4j_config_path} -Dcustom.log.dir={log_dir}")
-        .config("spark.executor.extraJavaOptions",
-                f"-Dlog4j.configuration=file:{log4j_config_path} -Dcustom.log.dir={log_dir}")
-        .config("spark.jars.packages", "org.apache.spark:spark-avro_2.13:4.0.1")
-        .enableHiveSupport()
-        .getOrCreate()
-    )
+    spark = get_spark(conf=conf, log4j_config_path=log4j_config_path, log_dir=log_dir)
 
     # initialize logger class 
     logger = Log4j(spark)
