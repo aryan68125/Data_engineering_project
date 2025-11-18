@@ -43,6 +43,7 @@ env/
 # Dataset folders
 # -------------------------
 data/
+dataset/
 datasets/
 raw_data/
 input_data/
