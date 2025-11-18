@@ -1,81 +1,81 @@
-name: Test & Deploy to Databricks (dev)
+# name: Test & Deploy to Databricks (dev)
 
-on:
-  push:
-    branches: [development]
+# on:
+#   push:
+#     branches: [development]
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+# jobs:
+#   test:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+#       - name: Set up Python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.11'
 
-      - name: Install deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -e .
+#       - name: Install deps
+#         run: |
+#           python -m pip install --upgrade pip
+#           pip install -r requirements.txt
+#           pip install -e .
 
-      - name: Run tests
-        run: pytest -q
+#       - name: Run tests
+#         run: pytest -q
 
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    if: success()
+#   deploy:
+#     needs: test
+#     runs-on: ubuntu-latest
+#     if: success()
 
-    steps:
-      - uses: actions/checkout@v4
+#     steps:
+#       - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+#       - name: Setup Python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.11'
 
-      - name: Install databricks cli
-        run: pip install databricks-cli
+#       - name: Install databricks cli
+#         run: pip install databricks-cli
 
-      - name: Configure databricks
-        env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-        run: |
-          mkdir -p ~/.databrickscfg
-          echo -e "[DEFAULT]\nhost = $DATABRICKS_HOST\ntoken = $DATABRICKS_TOKEN" > ~/.databrickscfg
+#       - name: Configure databricks
+#         env:
+#           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+#           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+#         run: |
+#           mkdir -p ~/.databrickscfg
+#           echo -e "[DEFAULT]\nhost = $DATABRICKS_HOST\ntoken = $DATABRICKS_TOKEN" > ~/.databrickscfg
 
-      - name: Build wheel
-        run: python setup.py bdist_wheel
+#       - name: Build wheel
+#         run: python setup.py bdist_wheel
 
-      - name: Upload wheel to DBFS
-        run: |
-          WHEEL=$(ls dist/*.whl | head -n1)
-          databricks fs cp $WHEEL dbfs:/tmp/your_app/your_app.whl --overwrite
+#       - name: Upload wheel to DBFS
+#         run: |
+#           WHEEL=$(ls dist/*.whl | head -n1)
+#           databricks fs cp $WHEEL dbfs:/tmp/your_app/your_app.whl --overwrite
 
-      - name: Create or update job & run
-        run: |
-          cat > job.json <<EOF
-          {
-            "name": "dev-process-patients",
-            "tasks": [
-              {
-                "task_key": "process_patients",
-                "python_wheel_task": {
-                  "package_name": "your_app",
-                  "entry_point": "your_app.jobs.process_patients:run"
-                },
-                "existing_cluster_id": null,
-                "new_cluster": {
-                  "spark_version": "14.0.x-scala2.13",
-                  "node_type_id": "Serverless",
-                  "num_workers": 1
-                }
-              }
-            ]
-          }
-          EOF
-          databricks jobs create --json-file job.json || echo "job create may fail if exists"
+#       - name: Create or update job & run
+#         run: |
+#           cat > job.json <<EOF
+#           {
+#             "name": "dev-process-patients",
+#             "tasks": [
+#               {
+#                 "task_key": "process_patients",
+#                 "python_wheel_task": {
+#                   "package_name": "your_app",
+#                   "entry_point": "your_app.jobs.process_patients:run"
+#                 },
+#                 "existing_cluster_id": null,
+#                 "new_cluster": {
+#                   "spark_version": "14.0.x-scala2.13",
+#                   "node_type_id": "Serverless",
+#                   "num_workers": 1
+#                 }
+#               }
+#             ]
+#           }
+#           EOF
+#           databricks jobs create --json-file job.json || echo "job create may fail if exists"
