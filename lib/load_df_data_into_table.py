@@ -1,4 +1,4 @@
-from .logger import Log4j
+from .logger import Log4j, log_operation
 """
 This class will load the data in a spark dataFrame into a table
 """
@@ -8,6 +8,7 @@ class LoadSparkDFIntoTable:
         self.logger = Log4j(spark)
     
     """This method will save the spark dataFrame into a spark managed table"""
+    @log_operation
     def save_df_to_spark_managed_table(self,spark_df,partition_config:list = [],mode:str = "overwrite",db_name:str = "",table_name:str=""):
         try:
             if not db_name == "":
@@ -41,7 +42,7 @@ class LoadSparkDFIntoTable:
                 writer.saveAsTable(table_name)
                 self.logger.info(self.spark.catalog.listTables("default"))
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
     
     # util methods 
     def partition_handler(self,partition_config,writer):
@@ -70,7 +71,7 @@ class LoadSparkDFIntoTable:
                 writer = writer.partitionBy(*partition_cols)
             return writer
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
             raise
 
     def generate_logs(self, conf):
@@ -101,5 +102,5 @@ class LoadSparkDFIntoTable:
                 self.logger.debug(f"  {field.name}: {field.dataType.simpleString()}")
 
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
             raise

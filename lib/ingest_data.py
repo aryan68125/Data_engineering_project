@@ -9,7 +9,7 @@ if PROJECT_ROOT not in sys.path:
 from pyspark.sql.functions import regexp_extract
 from pyspark.sql import functions as F
 
-from .logger import Log4j
+from .logger import Log4j, log_operation
 from .app_monitor import GetDataFrameMemory
 
 from spark_dataFrame_schema.spark_dataframe_schema import FlightSchemaMixin
@@ -24,6 +24,7 @@ class IngestData():
         self.metrics = GetDataFrameMemory(spark)
         self.df_schema = FlightSchemaMixin()
 
+    @log_operation
     def import_data_csv(self,file_dir):
         try:
             spark_df = (
@@ -44,7 +45,7 @@ class IngestData():
             self.log_df_metrics(spark_df=spark_df,file_dir=file_dir,operation_name="import_data_csv")
             return spark_df
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
 
     # utility methods
     def log_df_metrics(self,spark_df,file_dir,operation_name):

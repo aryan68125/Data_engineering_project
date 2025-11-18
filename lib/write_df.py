@@ -1,7 +1,9 @@
-from lib.logger import Log4j
+from lib.logger import Log4j, log_operation
 class ExportSparkDataFrame:
     def __init__(self,spark):
         self.logger = Log4j(spark)
+
+    @log_operation
     def export_df_parquet(self,spark_df,save_mode: str = "overwrite",output_path : str="",max_rec : int = 100):
         try:
             (
@@ -14,9 +16,10 @@ class ExportSparkDataFrame:
             )
             return True
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
             raise
     
+    @log_operation
     def export_df_avro(self,spark_df,save_mode: str = "overwrite", output_path: str = ""):
         try:
             (
@@ -28,9 +31,10 @@ class ExportSparkDataFrame:
             )
             return True
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
             raise
 
+    @log_operation
     def export_df_json(self,spark_df,save_mode : str = "overwrite", output_path : str = "",column_list : list = []):
         try:
             (
@@ -42,5 +46,5 @@ class ExportSparkDataFrame:
                 .save()
             )
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
             raise

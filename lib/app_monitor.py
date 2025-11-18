@@ -49,7 +49,7 @@ class GetDataFrameMemory:
             return {"mem": self.convert_bytes_to_mb(mem_used)}
 
         except Exception as e:
-            self.logger.error(f"Error while fetching DataFrame memory usage: {e}")
+            self.logger.error(f"❌ Error while fetching DataFrame memory usage: {e}")
             return {}
     def convert_bytes_to_mb(self, value):
         try:
@@ -64,5 +64,5 @@ class GetDataFrameMemory:
             else:
                 return value
         except Exception as e:
-            self.logger.error(f"Error in convert_bytes_to_mb: {e}")
+            self.logger.error(f"❌ Error in convert_bytes_to_mb: {e}")
             return value

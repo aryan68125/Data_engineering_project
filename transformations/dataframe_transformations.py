@@ -16,7 +16,7 @@ from pyspark.sql.types import BooleanType
 from pyspark.sql.functions import udf
 
 # import logging related stuff
-from lib.logger import Log4j
+from lib.logger import Log4j, log_operation
 from lib.app_monitor import GetDataFrameMemory
 
 # import window for implementing window function
@@ -33,14 +33,16 @@ class DataFrameTransformations:
         self.app_metrics = GetDataFrameMemory(spark)
 
     # dataFrame transformation methods here
+    @log_operation
     def create_unique_identifier(self,spark_df):
         try:
             spark_df = spark_df.withColumn("id",F.monotonically_increasing_id())
             return spark_df
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
             raise
-    
+
+    @log_operation
     def process_date_col_year(self,spark_df,col_name : str=None, combine_date : bool = False):
         try:
             if not col_name or col_name == "":
@@ -60,18 +62,20 @@ class DataFrameTransformations:
             self.app_metrics.get_mem_usage(spark_df=spark_df)
             return spark_df
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
             raise
-
+    
+    @log_operation
     def drop_duplicate_rows(self,spark_df,col_name_list:List[str]):
         try:
             spark_df = spark_df.dropDuplicates(col_name_list)
             self.app_metrics.get_mem_usage(spark_df=spark_df)
             return spark_df
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
             raise
-
+    
+    @log_operation
     def simple_aggregation_operation(self,spark_df):
         try:
             spark_df = spark_df.selectExpr(
@@ -86,9 +90,10 @@ class DataFrameTransformations:
             )
             return spark_df
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
             raise
     
+    @log_operation
     def complex_aggregation_operation(self,spark_df):
         try:
             spark_df = (
@@ -101,9 +106,10 @@ class DataFrameTransformations:
         )
             return spark_df
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
             raise
-
+    
+    @log_operation
     def group_by_country_agg(self,spark_df):
         try:
             NumInvoice = F.countDistinct("InvoiceNo").alias("NumInvoice")
@@ -128,9 +134,10 @@ class DataFrameTransformations:
             )
             return spark_df
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
             raise
-
+    
+    @log_operation
     def window_aggregation(self,spark_df):
         try:
             # Step 1: Add WeekNumber and per-row InvoiceValue
@@ -157,7 +164,7 @@ class DataFrameTransformations:
             )
             return spark_df
         except Exception as e:
-            self.logger.error(str(e))
+            self.logger.error(f"❌ {str(e)}")
             raise
 
     def log_df_metrics(self,spark_df,operation_name):

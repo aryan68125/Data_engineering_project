@@ -24,7 +24,7 @@ class CleanupAppFileSystemOnReRun:
                     self.logs_cleanup()
             # time.sleep(5)
         except Exception as e:
-            print(str(e))
+            print(f"❌ {str(e)}")
             raise
 
     """This will cleanup the derby.logs"""
@@ -37,7 +37,7 @@ class CleanupAppFileSystemOnReRun:
             else:
                 print(f"derby.log file does not exists: {derby_logs_dir}")
         except Exception as e:
-            print(str(e))
+            print(f"❌ {str(e)}")
             raise
     
     """This will cleanup the spark_warehouse"""
@@ -50,7 +50,7 @@ class CleanupAppFileSystemOnReRun:
             else:
                 print(f"spark-warehouse directory does not exists: {spark_warehouse_dir}")
         except Exception as e:
-            print(str(e))
+            print(f"❌ {str(e)}")
             raise
 
     """This will cleanup the metastore_db"""
@@ -63,7 +63,7 @@ class CleanupAppFileSystemOnReRun:
             else:
                 print(f"metastore directory does not exists: {metastore_dir}")
         except Exception as e:
-            print(str(e))
+            print(f"❌ {str(e)}")
             raise
 
     """This will clean the logs folder"""
@@ -77,6 +77,6 @@ class CleanupAppFileSystemOnReRun:
             else:
                 print(f"Log directory does not exist: {log_dir}")
         except Exception as e:
-            print(str(e))
+            print(f"❌ {str(e)}")
             raise
             
