@@ -11,13 +11,17 @@ The files like logs, metastore , spark-warehouse etc.. will be cleaned up (delet
 class CleanupAppFileSystemOnReRun:
     def __init__(self,project_dir):
         self.project_dir = project_dir
+        # This is to check if the application is running on databricks cluster or not 
+        self.is_databricks = "DATABRICKS_RUNTIME_VERSION" in os.environ
 
     def execute_cleanup(self,clean_logs:bool = False):
-        self.derby_logs_cleanup()
-        self.spark_warehouse_cleanup()
-        self.metastore_cleanup()
-        if clean_logs == True:
-            self.logs_cleanup()
+        # This will prevent the cleanup process for the dataLake to take place when the application is running on databricks instead of local machine
+        if not self.is_databricks:
+            self.derby_logs_cleanup()
+            self.spark_warehouse_cleanup()
+            self.metastore_cleanup()
+            if clean_logs == True:
+                self.logs_cleanup()
         # time.sleep(5)
 
     """This will cleanup the derby.logs"""
