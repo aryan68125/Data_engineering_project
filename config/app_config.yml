@@ -9,10 +9,10 @@ local:
     export_dir: export
     log_dir: log4j_properties/logs
     log4j_file: log4j_properties/log4j.properties
-    unit_test_log_dir: unit_test_errors.log
 
   custom:
     before_spark_initialization_logs: before_spark_initialization_logs.log
+    unit_test_log_dir: unit_test_errors.log
 
 
 
@@ -27,8 +27,8 @@ databricks:
     export_dir: /dbfs/FileStore/export
     log_dir: /dbfs/FileStore/logs
     log4j_file: /dbfs/FileStore/log4j.properties
-    unit_test_log_dir: /dbfs/FileStore/unit_test_errors.log
     
   custom:
     before_spark_initialization_logs: /dbfs/FileStore/before_spark_initialization_logs.log
+    unit_test_log_dir: /dbfs/FileStore/unit_test_errors.log
     

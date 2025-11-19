@@ -12,10 +12,24 @@ from datetime import date , datetime
 
 import logging
 
+from lib.ENUM import EnvEnum
+from lib.utils import DynamicAppConfigLoader
+
 class TestDataFrameTransformations(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        cls.env = EnvEnum.DATABRICKS_ENV.value if "DATABRICKS_RUNTIME_VERSION" in os.environ else EnvEnum.LOCAL_ENV.value
+        
+        # get project directory 
+        cls.project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+        # initialize DynamicAppConfigLoader and get the application configuration depending on the env its running on
+        d_app_conf_loader = DynamicAppConfigLoader(env = cls.env, project_dir = cls.project_dir)
+        cls.conf = d_app_conf_loader.get_spark_app_config()
+        unit_test_log_dir = cls.conf["custom"]["unit_test_log_dir"]
+
+
         cls.spark = (
             SparkSession.builder
             .appName("PySparkUnitTest")
@@ -25,7 +39,7 @@ class TestDataFrameTransformations(unittest.TestCase):
         cls.transformer = DataFrameTransformations(cls.spark)
         # Adding a test level logger
         logging.basicConfig(
-            filename="unit_test_errors.log",
+            filename=unit_test_log_dir,
             level=logging.ERROR,
             format="%(asctime)s - %(levelname)s - %(message)s"
         )
