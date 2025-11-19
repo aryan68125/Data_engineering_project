@@ -11,5 +11,4 @@ class LoadAppConfigs:
             full_config = yaml.safe_load(f)
         if self.env not in full_config:
             raise ValueError(f"Environment '{self.env}' not found in YAML config.")
-        
         return full_config[self.env]

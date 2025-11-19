@@ -3,7 +3,7 @@ import time
 import traceback
 
 import logging
-from lib.ENUM import PyLogTypeEnum
+from typing import Dict, Optional
 
 class Log4j:
     def __init__(self, spark):
@@ -69,50 +69,77 @@ def log_operation(fn):
     return wrapper 
 
 # This class will use python's inbuilt logger where Log4j couldn't be used
-class PyLogger:
-    def __init__(self,log_file_name=None):
-        self.log_file_name = log_file_name
+class PyLoggerRegistry:
+    """
+    Central registry for named loggers.
 
-    def get_py_logger(self, log_type):
-        if not self.log_file_name:
-            raise ValueError(f"❌ log_file_name is required to be able to generate logs")
-        
-        if log_type == PyLogTypeEnum.LOG_ERROR:
-            self.log_error()
-        elif log_type == PyLogTypeEnum.LOG_WARNING:
-            self.log_warning()
-        elif log_type == PyLogTypeEnum.LOG_DEBUG:
-            self.log_debug()
-        elif log_type == PyLogTypeEnum.LOG_INFO:
-            self.log_info()
-        self.py_logger = logging.getLogger(__name__)
-        return self.py_logger
-    
-    def log_error(self):
-        logging.basicConfig(
-                filename=self.log_file_name,
-                level=logging.ERROR,
-                format="%(asctime)s - %(levelname)s - %(message)s"
-            )
-    
-    def log_warning(self):
-        logging.basicConfig(
-                filename=self.log_file_name,
-                level=logging.WARNING,
-                format="%(asctime)s - %(levelname)s - %(message)s"
-            )
-    
-    def log_debug(self):
-        logging.basicConfig(
-                filename=self.log_file_name,
-                level=logging.DEBUG,
-                format="%(asctime)s - %(levelname)s - %(message)s"
-            ) 
-        
-    def log_info(self):
-        logging.basicConfig(
-                filename=self.log_file_name,
-                level=logging.INFO,
-                format="%(asctime)s - %(levelname)s - %(message)s"
-            )
+
+    Ensures:
+    - No duplicate handlers
+    - Consistent formatting
+    - Easy access through get_logger(name)
+    """
+
+    _loggers : Dict[str, logging.Logger] = {}
+    _default_level = logging.INFO
+    _default_format = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
+
+    @classmethod
+    def get_logger(
+        cls,
+        name:str,
+        level:Optional[int] = None,
+        file:Optional[str] = None,
+    ) -> logging.Logger:
+        """
+        Returns a configured logger. Creates a new one if not already registered.
+        """
+        if name in cls._loggers:
+            return cls._loggers[name]
+        logger = logging.getLogger(name)
+        logger.setLevel(level or cls._default_level)
+        logger.propagate = False # Stop double logging
+
+        formatter = logging.Formatter(cls._default_format)
+
+        # Console handler
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+
+        if file:
+            file_handler = logging.FileHandler(file)
+            file_handler.setFormatter(formatter)
+            logger.addHandler(file_handler)
+        cls._loggers[name] = logger
+        return logger
+
+class PyLogger:
+    """
+    Simple wrapper class for a single logger instance.
+    Provides clean .info(), .error(), .debug(), etc.
+    """
+
+    def __init__(self, name: str, level: Optional[int] = None, file: Optional[str] = None):
+        self._logger = PyLoggerRegistry.get_logger(name, level, file)
+
+
+    def info(self, msg: str, *args, **kwargs):
+        self._logger.info(msg, *args, **kwargs)
+
+
+    def warning(self, msg: str, *args, **kwargs):
+        self._logger.warning(msg, *args, **kwargs)
+
+
+    def error(self, msg: str, *args, **kwargs):
+        self._logger.error(msg, *args, **kwargs)
+
+
+    def debug(self, msg: str, *args, **kwargs):
+        self._logger.debug(msg, *args, **kwargs)
+
+
+    def critical(self, msg: str, *args, **kwargs):
+        self._logger.critical(msg, *args, **kwargs)
 
