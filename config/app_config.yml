@@ -8,6 +8,8 @@ local:
     export_dir: export
     log_dir: log4j_properties/logs
     log4j_file: log4j_properties/log4j.properties
+  custom:
+
 
 databricks:
   spark:
@@ -18,3 +20,5 @@ databricks:
     export_dir: /dbfs/FileStore/export
     log_dir: /dbfs/FileStore/logs
     log4j_file: /dbfs/FileStore/log4j.properties
+  custom: 
+    

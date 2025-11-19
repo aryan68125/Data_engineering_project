@@ -21,27 +21,72 @@ from lib.clean_up_file_system import CleanupAppFileSystemOnReRun
 # imports related to generating dataFrame
 from unit_testing.generate_dataframe import GenerateDataFrame
 
+# import enum
+from lib.ENUM import EnvEnum
+
+# import app yaml config loader
+from core.config_loader import LoadAppConfigs
+
+class MainDriver:
+    def __init__(self):
+        # detect environment 
+        # This code will detect wheather the application is running on databricks or on a local machine
+        self.env = EnvEnum.DATABRICKS_ENV if "DATABRICKS_RUNTIME_VERSION" in os.environ else EnvEnum.LOCAL_ENV
+        
+        # get project directory 
+        self.project_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # get app config yaml file directory location
+        app_config_path = os.path.join(self.project_dir,"config","app_config.yml")
+
+        # Load the app configs based on which env the app is running on and the path of the config yaml file
+        get_app_conf = LoadAppConfigs(env=self.env,config_path=app_config_path)
+        self.conf = get_app_conf.load_app_config()
+    
+    def clean_datalake_metadata_and_logs_before_re_run(self):
+        cleanup = CleanupAppFileSystemOnReRun(project_dir=self.project_dir,env = self.env)
+        cleanup.execute_cleanup(clean_logs=True)
+
+    def setup_log4j_logger(self):
+        # get log4j.properties config path
+        self.log4j_config_path = os.path.join(self.project_dir, "log4j_properties", "log4j.properties")
+        # get log_dir_path
+        self.log_dir = os.path.join(self.project_dir, "log4j_properties", "logs")
+        # create log dir if not there
+        os.makedirs(self.log_dir, exist_ok=True)
+
+    def create_spark_session(self):
+        conf = get_spark_app_config(is_databricks=self.env)
+        spark = get_spark(conf=conf, log4j_config_path=self.log4j_config_path, log_dir=self.log_dir)
+
+
 if __name__ == "__main__":
+
+
+
     # check if the application is running on databricks or not 
-    is_databricks = "DATABRICKS_RUNTIME_VERSION" in os.environ
+    """change this : DONE"""
+    # is_databricks = "DATABRICKS_RUNTIME_VERSION" in os.environ
 
     # logging related logic
     # Get the current project's directory
-    project_dir = os.path.dirname(os.path.abspath(__file__))
+    # project_dir = os.path.dirname(os.path.abspath(__file__))
     # cleanup loggic on main_app.py re-run
     # initialize the cleanup class
-    cleanup = CleanupAppFileSystemOnReRun(project_dir,is_databricks)
-    cleanup.execute_cleanup(clean_logs=True)
+    """change this"""
+    # cleanup = CleanupAppFileSystemOnReRun(project_dir,is_databricks)
+    # cleanup.execute_cleanup(clean_logs=True)
 
     # Get the Log4j.properties file directory
-    log4j_config_path = os.path.join(project_dir, "log4j_properties", "log4j.properties")
+    # log4j_config_path = os.path.join(project_dir, "log4j_properties", "log4j.properties")
     # Save the directory where the generated log files must reside
-    log_dir = os.path.join(project_dir, "log4j_properties", "logs")
+    # log_dir = os.path.join(project_dir, "log4j_properties", "logs")
     # Create the directory where the log files must be kept if not present
-    os.makedirs(log_dir, exist_ok=True)
+    # os.makedirs(log_dir, exist_ok=True)
 
-    conf = get_spark_app_config(is_databricks=is_databricks)
-    spark = get_spark(conf=conf, log4j_config_path=log4j_config_path, log_dir=log_dir)
+    """change this"""
+    # conf = get_spark_app_config(is_databricks=is_databricks)
+    # spark = get_spark(conf=conf, log4j_config_path=log4j_config_path, log_dir=log_dir)
 
     # initialize logger class 
     logger = Log4j(spark)

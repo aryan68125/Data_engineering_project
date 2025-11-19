@@ -3,28 +3,42 @@ import shutil
 
 import time
 
+from lib.ENUM import EnvEnum
+
+from lib.logger import PyLogger
+
 """
 This class will cleanup the data when the spark application re-runs
 
 The files like logs, metastore , spark-warehouse etc.. will be cleaned up (deleted from the file system)
 """
 class CleanupAppFileSystemOnReRun:
-    def __init__(self,project_dir,is_databricks=None):
+    def __init__(self,project_dir,env=None):
         self.project_dir = project_dir
-        self.is_databricks = is_databricks
+        self.env = env
+
+        py_logger_obj = PyLogger(log_file_name="cleanup_up_before_app_re_run.log")
+        
+        self.py_logger = logging.getLogger(__name__)
 
     def execute_cleanup(self,clean_logs:bool = False):
         try:
             # This will prevent the cleanup process for the dataLake to take place when the application is running on databricks instead of local machine
-            if not self.is_databricks:
+            if self.env == EnvEnum.LOCAL_ENV:
                 self.derby_logs_cleanup()
                 self.spark_warehouse_cleanup()
                 self.metastore_cleanup()
                 if clean_logs == True:
                     self.logs_cleanup()
+            elif self.env == EnvEnum.DATABRICKS_ENV:
+                self.py_logger(f"📢️ App is running on databricks hence auto-clean dataLake, database metadata and logs will not be done")
+                pass
+            else:
+                self.py_logger(f"📢️ auto-clean has detected some other environment other than databricks or local machine no cleaning action will be taken for safety measures")
+                pass
             # time.sleep(5)
         except Exception as e:
-            print(f"❌ {str(e)}")
+            self.py_logger(f"❌ {str(e)}")
             raise
 
     """This will cleanup the derby.logs"""
@@ -37,7 +51,7 @@ class CleanupAppFileSystemOnReRun:
             else:
                 print(f"derby.log file does not exists: {derby_logs_dir}")
         except Exception as e:
-            print(f"❌ {str(e)}")
+            self.py_logger(f"❌ {str(e)}")
             raise
     
     """This will cleanup the spark_warehouse"""
@@ -50,7 +64,7 @@ class CleanupAppFileSystemOnReRun:
             else:
                 print(f"spark-warehouse directory does not exists: {spark_warehouse_dir}")
         except Exception as e:
-            print(f"❌ {str(e)}")
+            self.py_logger(f"❌ {str(e)}")
             raise
 
     """This will cleanup the metastore_db"""
@@ -63,7 +77,7 @@ class CleanupAppFileSystemOnReRun:
             else:
                 print(f"metastore directory does not exists: {metastore_dir}")
         except Exception as e:
-            print(f"❌ {str(e)}")
+            self.py_logger(f"❌ {str(e)}")
             raise
 
     """This will clean the logs folder"""
@@ -77,6 +91,6 @@ class CleanupAppFileSystemOnReRun:
             else:
                 print(f"Log directory does not exist: {log_dir}")
         except Exception as e:
-            print(f"❌ {str(e)}")
+            self.py_logger(f"❌ {str(e)}")
             raise
             
