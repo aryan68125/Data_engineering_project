@@ -300,3 +300,43 @@ You can run this project using this command
 ```bash
 python3 main_app.py
 ```
+
+## How to setup Databricks CLI
+### Step 1 : 
+Install databricks cli tool
+```bash
+    pip install databricks-cli
+```
+
+### Step 2 : 
+Verify the databricks CLI tool installation
+```bash
+    databricks --version
+    Version 0.18.0
+```
+### NOTE : The steps below works only for this databrcisk version 0.18.0 or below
+
+### Step 3 : 
+Know which CLI version you are using 
+```bash
+    databricks -v
+```
+### Step 4 :
+Configure Databricks CLI (Use PAT token)
+```bash
+    databricks configure --host https://<your-databricks-workspace-url>
+```
+**sample <your-databricks-workspace-url>**
+```bash
+    dbc-e59b7df7-56be.cloud.databricks.com
+```
+Then it will prompt you to insert 
+```bash
+    Databricks Host: https://sdome_string.cloud.databricks.com
+    Token: some_string_here
+```
+### Step 5 : 
+Verify your databricks connection
+```bash
+    databricks workspace list
+```

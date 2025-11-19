@@ -34,14 +34,4 @@ class DynamicAppConfigLoader:
         spark_conf = self.load_app_conf_obj.load_app_config()
 
         self.py_logger.info(f"💡️ Spark configs --> {spark_conf}")
-
-        # [OLD CODE : DEPRICATED]
-        # spark_conf = SparkConf()
-        # config = configparser.ConfigParser()
-        # # Read the spark.conf file from the dirtectory
-        # config.read(os.path.join(os.getcwd(),"spark.conf"))
-
-        # # Loop through the configs and set it to the spark conf
-        # for (key, val) in config.items("SPARK_APP_CONFIGS"):
-        #     spark_conf.set(key,val)
         return spark_conf

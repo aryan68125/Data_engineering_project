@@ -22,6 +22,7 @@ class TestDataFrameTransformations(unittest.TestCase):
         cls.env = EnvEnum.DATABRICKS_ENV.value if "DATABRICKS_RUNTIME_VERSION" in os.environ else EnvEnum.LOCAL_ENV.value
         
         # get project directory 
+        # go one directory up from unit_testing/
         cls.project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
         # initialize DynamicAppConfigLoader and get the application configuration depending on the env its running on
