@@ -40,7 +40,7 @@ if __name__ == "__main__":
     # Create the directory where the log files must be kept if not present
     os.makedirs(log_dir, exist_ok=True)
 
-    conf = get_spark_app_config()
+    conf = get_spark_app_config(is_databricks=is_databricks)
     spark = get_spark(conf=conf, log4j_config_path=log4j_config_path, log_dir=log_dir)
 
     # initialize logger class 

@@ -1,0 +1,20 @@
+local:
+  spark:
+    spark.app.name : SparkAppLocal
+    spark.master: local[3]
+    spark.sql.shuffle.partitions: 2
+  paths:
+    dataset_dir: dataset
+    export_dir: export
+    log_dir: log4j_properties/logs
+    log4j_file: log4j_properties/log4j.properties
+
+databricks:
+  spark:
+    spark.app.name: SparkAppDataBricks
+    spark.sql.shuffle.partitions: 200
+  paths:
+    dataset_dir: /dbfs/FileStore/dataset
+    export_dir: /dbfs/FileStore/export
+    log_dir: /dbfs/FileStore/logs
+    log4j_file: /dbfs/FileStore/log4j.properties
