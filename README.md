@@ -366,6 +366,39 @@ Verify your databricks connection
 - Go to workspace > Repos > then click on the link where it says create a Repo
 - ![attch_github_repo_to_databricks](images/databricks_attach_github_repo.png)
 
+#### Automatic job update
+databricks_job.json
+```json
+{
+  "name": "data_engineering_project",
+  "tasks": [
+    {
+      "task_key": "run_main",
+      "python_script_task": {
+        "python_file": "/Repos/<username>/<repo>/main_app.py"
+      },
+      "environment": {
+        "environment_name": "pyspark_env",
+        "dependencies": [
+          "/Repos/<username>/<repo>/requirements.txt"
+        ]
+      },
+      "job_cluster_key": "spark_cluster"
+    }
+  ],
+  "job_clusters": [
+    {
+      "job_cluster_key": "spark_cluster",
+      "new_cluster": {
+        "spark_version": "14.3.x-scala2.12",
+        "node_type_id": "i3.xlarge",
+        "num_workers": 1
+      }
+    }
+  ]
+}
+```
+
 ### ROAD BLOCK HIT
 🔴 Databricks Free Edition does NOT support Git-linked Repos
 
