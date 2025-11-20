@@ -1,62 +1,66 @@
-# name: PySpark App CI/CD
+name: PySpark App CI/CD
 
-# on:
-#   push:
-#     branches:
-#       - "feature/**"
-#   pull_request:
-#     branches:
-#       - main
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]   # deploy only when merged to main
 
-# jobs:
-#   test-and-deploy:
-#     runs-on: ubuntu-latest
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
 
-#     env:
-#       DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-#       DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
-#     steps:
+    steps:
 
-#     - name: Checkout repo
-#       uses: actions/checkout@v4
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
-#     - name: Set up Python
-#       uses: actions/setup-python@v5
-#       with:
-#         python-version: "3.10"
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        # python-version: "3.10"
+        python-version: "3.13.7"
 
-#     - name: Install dependencies
-#       run: |
-#         pip install -r requirements.txt
-#         pip install databricks-cli
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install databricks  # Unified CLI v2
 
-#     - name: Run unit tests
-#       run: |
-#         python unit_testing/unit_test.py || true
+    - name: Run unit tests
+      run: |
+        mkdir -p logs
+        python3 -m unit_testing.unit_test || true
 
-#     - name: Upload unit test log
-#       uses: actions/upload-artifact@v4
-#       with:
-#         name: unit-test-errors
-#         path: unit_test_errors.log
-#         if-no-files-found: ignore
+    - name: Upload unit test logs
+      uses: actions/upload-artifact@v4
+      with:
+        name: unit-test-logs
+        path: unit_test_errors.log
+        if-no-files-found: ignore
 
-#     - name: Fail if tests failed
-#       run: |
-#         if grep -q "Error" unit_test_errors.log; then
-#           echo "Unit tests failed!"
-#           exit 1
-#         fi
+    - name: Fail if tests failed
+      run: |
+        if [ -f unit_test_errors.log ] && grep -q "Error" unit_test_errors.log; then
+          echo "Unit tests failed!"
+          exit 1
+        fi
 
-#     - name: Deploy to Databricks (Only if tests pass)
-#       if: success()
-#       run: |
-#       start workign from here you need to know what are these and how you can implement this
-#         databricks repos update --repo-id <YOUR_REPO_ID> --branch feature
-#         databricks jobs put --job-id <JOB_ID> --json-file databricks_job.json
+    - name: Deploy to Databricks repo (ONLY after merge into main)
+      if: github.ref == 'refs/heads/main' && success()
+      run: |
+        databricks repos update --repo-id ${{ secrets.DATABRICKS_REPO_ID }} --branch main
 
-#     - name: Trigger Job Run
-#       if: success()
-#       run: |
-#         databricks jobs run-now --job-id <JOB_ID>
+    - name: Upload job definition
+      if: github.ref == 'refs/heads/main' && success()
+      run: |
+        databricks jobs put --job-id ${{ secrets.DATABRICKS_JOB_ID }} --json-file databricks_job.json
+
+    - name: Trigger Databricks job run
+      if: github.ref == 'refs/heads/main' && success()
+      run: |
+        databricks jobs run-now --job-id ${{ secrets.DATABRICKS_JOB_ID }}
