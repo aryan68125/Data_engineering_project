@@ -361,3 +361,35 @@ Verify your databricks connection
     - ```<your-user-or-team>``` : In here this means that you need to replace this with the username of the workspace that you created 
         - Here it the username workspace you can get as shown below in the picture below
         ![databricks_workspace_username](images/how_to_get_databticks_workspace_username.png)
+- Then click create 
+#### attaching github repo with your databricks 
+- Go to workspace > Repos > then click on the link where it says create a Repo
+- ![attch_github_repo_to_databricks](images/databricks_attach_github_repo.png)
+
+### ROAD BLOCK HIT
+🔴 Databricks Free Edition does NOT support Git-linked Repos
+
+On Free Edition:
+
+You can create folders named “Repos”
+
+You can upload files
+
+You can view code
+
+BUT:
+
+❌ You CANNOT create real Databricks Repos
+❌ You CANNOT link GitHub
+❌ You CANNOT use databricks repos CLI
+❌ You CANNOT get a repo-id (because it does not exist)
+
+This is EXACTLY why:
+
+Your URL always shows /browse/folders/...
+
+It never shows #repo/<id>/files
+
+databricks repos list returns nothing
+
+The job task UI only allows uploading files — not linking code from a repo
