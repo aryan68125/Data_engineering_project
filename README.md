@@ -302,26 +302,37 @@ python3 main_app.py
 ```
 
 ## How to setup Databricks CLI
-### Step 1 : 
+### If you want to install databricks linux package then use this command to do so
+```bash
+    curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/v0.278.0/install.sh | sudo sh
+```
+verify if the databricks is installed or not 
+```bash
+    databricks -v
+```
+For more info you can visit this page where databricks actually shows how to install their cli command line tool on the system
+https://docs.databricks.com/aws/en/dev-tools/cli/install#curl-update
+
+### If you want to install databricks cli python varient
+#### Step 1 : 
 Install databricks cli tool
 ```bash
     pip install databricks-cli
 ```
-
-### Step 2 : 
+#### Step 2 : 
 Verify the databricks CLI tool installation
 ```bash
     databricks --version
     Version 0.18.0
 ```
-### NOTE : The steps below works only for this databrcisk version 0.18.0 or below
+#### NOTE : The steps below works only for this databrcisk version 0.18.0 or below
 
-### Step 3 : 
+#### Step 3 : 
 Know which CLI version you are using 
 ```bash
     databricks -v
 ```
-### Step 4 :
+#### Step 4 :
 Configure Databricks CLI (Use PAT token)
 ```bash
     databricks configure --host https://<your-databricks-workspace-url>
@@ -335,8 +346,50 @@ Then it will prompt you to insert
     Databricks Host: https://sdome_string.cloud.databricks.com
     Token: some_string_here
 ```
-### Step 5 : 
+#### Step 5 : 
 Verify your databricks connection
 ```bash
     databricks workspace list
 ```
+
+### Preparing databricks for Ci/Cd pipeline and github actions
+#### Creating jobs on databricks
+- ![create_jobs](images/databricks_jobs_setup.png)
+- As you can see in the picture there exists a Path field
+- In this Path field you need to enter path like this ```/Repos/<your-user-or-team>/<your-repo-name>/<path-to-your-python-script>.py```
+    - ```<your-repo-name>``` : In here this means that you need to replace this with your github's repository name.
+    - ```<your-user-or-team>``` : In here this means that you need to replace this with the username of the workspace that you created 
+        - Here it the username workspace you can get as shown below in the picture below
+        ![databricks_workspace_username](images/how_to_get_databticks_workspace_username.png)
+- Then click create 
+#### attaching github repo with your databricks 
+- Go to workspace > Repos > then click on the link where it says create a Repo
+- ![attch_github_repo_to_databricks](images/databricks_attach_github_repo.png)
+
+### ROAD BLOCK HIT
+🔴 Databricks Free Edition does NOT support Git-linked Repos
+
+On Free Edition:
+
+You can create folders named “Repos”
+
+You can upload files
+
+You can view code
+
+BUT:
+
+❌ You CANNOT create real Databricks Repos
+❌ You CANNOT link GitHub
+❌ You CANNOT use databricks repos CLI
+❌ You CANNOT get a repo-id (because it does not exist)
+
+This is EXACTLY why:
+
+Your URL always shows /browse/folders/...
+
+It never shows #repo/<id>/files
+
+databricks repos list returns nothing
+
+The job task UI only allows uploading files — not linking code from a repo
